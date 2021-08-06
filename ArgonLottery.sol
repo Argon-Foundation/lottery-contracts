@@ -1,3 +1,12 @@
+/*
+   ___                    
+  / _ | _______ ____  ___ 
+ / __ |/ __/ _ `/ _ \/ _ \
+/_/ |_/_/  \_, /\___/_//_/
+          /___/        
+
+*/
+
 pragma solidity ^0.7.0;
 
 library SafeMathChainlink {
@@ -864,7 +873,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         }
 
         participantTicketCount[msg.sender] = participantTicketCount[msg.sender]
-        .add(_ticketAmount);
+            .add(_ticketAmount);
         soldTicketCount = soldTicketCount.add(_ticketAmount);
     }
 
@@ -1025,7 +1034,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         }
 
         uint256[] memory amountOutMins = IUniswapV2Router(UNISWAP_V2_ROUTER)
-        .getAmountsOut(_amountIn, path);
+            .getAmountsOut(_amountIn, path);
         return amountOutMins[path.length.sub(1)];
     }
 
