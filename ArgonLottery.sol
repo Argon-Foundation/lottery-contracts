@@ -7,6 +7,15 @@
 
 */
 
+/*
+   ___                    
+  / _ | _______ ____  ___ 
+ / __ |/ __/ _ `/ _ \/ _ \
+/_/ |_/_/  \_, /\___/_//_/
+          /___/        
+
+*/
+
 pragma solidity ^0.7.0;
 
 library SafeMathChainlink {
@@ -799,9 +808,9 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         0xc251acd21ec4fb7f31bb8868288bfdbaeb4fbfec2df3735ddbd4f7dc8d60103c;
     bytes32 public randomness;
     uint256 public rewardPerWinner;
-    uint256 rewardAmount = rewardTokenAmount.mul(80).div(100);
-    uint256 burnAmount = rewardTokenAmount.sub(rewardAmount);
-
+    uint256 burnAmount;
+    uint256 verifyWithdraw = 0;
+    uint256 rewardAmount;
     IERC20 public token;
     IERC20 public rewardToken;
     IERC20 public linkToken =
@@ -837,6 +846,14 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         lotteryStatus = _lotteryStatus;
         tokenPerTicket = _tokenPerTicket;
         maxTicketCount = _maxTicketCount;
+         require(
+            startTime < endTime,
+            "start block timestamp must be less than finish block timestamp"
+        );
+        require(
+            endTime > block.timestamp,
+            "finish block timestamp must be more than current block timestamp"
+        );
         startTime = _startTime;
         endTime = _endTime;
         rewardTokenAmount = _rewardTokenAmount;
@@ -877,92 +894,81 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         soldTicketCount = soldTicketCount.add(_ticketAmount);
     }
 
-    function getWinnerCount() public view returns (uint256) {
-        return 64;
-        /*
-       if(soldTicketCount.mul(25).div(10000) < 1) {
-        return 1;
-        } else {
-            return soldTicketCount.mul(25).div(10000);
-        }
-        */
-    }
-
     function getParticipants() public view returns (address[] memory) {
         return participants;
-    }
-
-    function getRequiredLink() public view returns (uint256) {
-        return getWinnerCount().mul(fee);
     }
 
     function selectWinnerPeriodOne() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
-        require(rewardToken.balanceOf(address(this)) > 0);
         uint256 requiredLink = fee.mul(1);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
             "Not enough link in smart contract"
         );
+        rewardAmount = rewardTokenAmount.mul(80).div(100);
+        burnAmount = rewardTokenAmount.sub(rewardAmount);
         rewardPerWinner = rewardAmount.mul(40).div(100);
         _getRandomNumber();
         rewardToken.safeTransfer(
             0x000000000000000000000000000000000000dEaD,
             burnAmount
         );
+        verifyWithdraw = verifyWithdraw.add(1)
     }
 
     function selectWinnerPeriodTwo() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
-        require(rewardToken.balanceOf(address(this)) > 0);
         uint256 requiredLink = fee.mul(3);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
             "Not enough link in smart contract"
         );
+        rewardAmount = rewardTokenAmount.mul(80).div(100);
+        rewardPerWinner = rewardAmount.mul(30).div(100).div(3);
         for (uint256 i = 0; i < 4; i++) {
-            rewardPerWinner = rewardAmount.mul(30).div(100).div(3);
             _getRandomNumber();
         }
+        verifyWithdraw = verifyWithdraw.add(1)
     }
 
     function selectWinnerPeriodThree() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
-        require(rewardToken.balanceOf(address(this)) > 0);
         uint256 requiredLink = fee.mul(11);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
             "Not enough link in smart contract"
         );
-
+        rewardAmount = rewardTokenAmount.mul(80).div(100);
+        rewardPerWinner = rewardAmount.mul(20).div(100).div(10);
         for (uint256 i = 0; i < 11; i++) {
-            rewardPerWinner = rewardAmount.mul(20).div(100).div(10);
             _getRandomNumber();
         }
+        verifyWithdraw = verifyWithdraw.add(1)
     }
 
     function selectWinnerPeriodFour() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
-        require(rewardToken.balanceOf(address(this)) > 0);
         uint256 requiredLink = fee.mul(51);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
             "Not enough link in smart contract"
         );
-
+        rewardAmount = rewardTokenAmount.mul(80).div(100);
+        rewardPerWinner = rewardAmount.mul(10).div(100).div(50);
         for (uint256 i = 0; i < 51; i++) {
-            rewardPerWinner = rewardAmount.mul(10).div(100).div(50);
             _getRandomNumber();
         }
+        verifyWithdraw = verifyWithdraw.add(1)
     }
 
     function emergencyWithdrawTokens() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         require(rewardToken.balanceOf(address(this)) > 0);
+        require(verifyWithdraw == 4)
         rewardToken.safeTransfer(
             msg.sender,
             rewardToken.balanceOf(address(this))
@@ -1050,15 +1056,17 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
     /**
      * Callback function used by VRF Coordinator
      */
+     
     function fulfillRandomness(bytes32 requestId, uint256 _randomness)
         internal
         override
         nonReentrant
     {
         uint256 winner = _randomness.mod(participants.length);
-
         participantIsWon[participants[winner]] = true;
         rewardToken.safeTransfer(participants[winner], rewardPerWinner);
         winners.push(participants[winner]);
+        
+        
     }
 }
