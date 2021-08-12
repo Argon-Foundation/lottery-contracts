@@ -891,6 +891,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
 
     function selectWinnerPeriodOne() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
+        verifyWithdraw = verifyWithdraw.add(1)
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(1);
         require(
@@ -910,6 +911,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
 
     function selectWinnerPeriodTwo() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
+        verifyWithdraw = verifyWithdraw.add(1)
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(3);
         require(
@@ -926,6 +928,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
 
     function selectWinnerPeriodThree() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
+        verifyWithdraw = verifyWithdraw.add(1)
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(11);
         require(
@@ -937,11 +940,12 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         for (uint256 i = 0; i < 11; i++) {
             _getRandomNumber();
         }
-        verifyWithdraw = verifyWithdraw.add(1)
+        
     }
 
     function selectWinnerPeriodFour() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
+        verifyWithdraw = verifyWithdraw.add(1)
         require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(51);
         require(
@@ -953,7 +957,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         for (uint256 i = 0; i < 51; i++) {
             _getRandomNumber();
         }
-        verifyWithdraw = verifyWithdraw.add(1)
+        
     }
 
     function emergencyWithdrawTokens() external nonReentrant onlyOwner {
