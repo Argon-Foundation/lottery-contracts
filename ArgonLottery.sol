@@ -809,7 +809,9 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
 
     mapping(address => uint256) public participantTicketCount;
     mapping(address => bool) public participantIsWon;
-
+    mapping(bytes32 => bool) public isRequestIdValid;
+    
+    bytes32[] public requestIds;
     address[] public winners;
     address[] public participants;
 
@@ -901,7 +903,9 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         rewardAmount = rewardTokenAmount.mul(80).div(100);
         burnAmount = rewardTokenAmount.sub(rewardAmount);
         rewardPerWinner = rewardAmount.mul(40).div(100);
-        _getRandomNumber();
+        bytes32 _requestId = _getRandomNumber();
+        isRequestIdValid[_requestId] = true;
+        requestIds.push(_requestId);
         rewardToken.safeTransfer(
             0x000000000000000000000000000000000000dEaD,
             burnAmount
@@ -921,7 +925,9 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         rewardAmount = rewardTokenAmount.mul(80).div(100);
         rewardPerWinner = rewardAmount.mul(30).div(100).div(3);
         for (uint256 i = 0; i < 4; i++) {
-            _getRandomNumber();
+             bytes32 _requestId = _getRandomNumber();
+             isRequestIdValid[_requestId] = true;
+             requestIds.push(_requestId);
         }
         verifyWithdraw = verifyWithdraw.add(1)
     }
@@ -938,7 +944,9 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         rewardAmount = rewardTokenAmount.mul(80).div(100);
         rewardPerWinner = rewardAmount.mul(20).div(100).div(10);
         for (uint256 i = 0; i < 11; i++) {
-            _getRandomNumber();
+            bytes32 _requestId = _getRandomNumber();
+            isRequestIdValid[_requestId] = true;
+            requestIds.push(_requestId);
         }
         
     }
@@ -955,7 +963,9 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         rewardAmount = rewardTokenAmount.mul(80).div(100);
         rewardPerWinner = rewardAmount.mul(10).div(100).div(50);
         for (uint256 i = 0; i < 51; i++) {
-            _getRandomNumber();
+            bytes32 _requestId = _getRandomNumber();
+            isRequestIdValid[_requestId] = true;
+            requestIds.push(_requestId);
         }
         
     }
@@ -1057,6 +1067,8 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         override
         nonReentrant
     {
+        require(isRequestIdValid[requestId]);
+        isRequestIdValid[requestId] = false;
         uint256 winner = _randomness.mod(participants.length);
         participantIsWon[participants[winner]] = true;
         rewardToken.safeTransfer(participants[winner], rewardPerWinner);
