@@ -799,6 +799,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         0xc251acd21ec4fb7f31bb8868288bfdbaeb4fbfec2df3735ddbd4f7dc8d60103c;
     bytes32 public randomness;
     uint256 public rewardPerWinner;
+    uint256 public maxBuyTicket;
     uint256 burnAmount;
     uint256 verifyWithdraw = 0;
     uint256 rewardAmount;
@@ -824,6 +825,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         bool _lotteryStatus,
         uint256 _tokenPerTicket,
         uint256 _maxTicketCount,
+        uint256 _maxBuyTicket,
         uint256 _startTime,
         uint256 _endTime,
         uint256 _rewardTokenAmount,
@@ -839,6 +841,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         lotteryStatus = _lotteryStatus;
         tokenPerTicket = _tokenPerTicket;
         maxTicketCount = _maxTicketCount;
+        maxBuyTicket = _maxBuyTicket;
          require(
             startTime < endTime,
             "start block timestamp must be less than finish block timestamp"
@@ -869,6 +872,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
             participantTicketCount[msg.sender].add(_ticketAmount) <=
                 maxTicketCount
         );
+        require(_ticketAmount <= maxBuyTicket, "Max buy ticket");
         token.transferFrom(
             msg.sender,
             address(this),
