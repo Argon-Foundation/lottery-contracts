@@ -808,6 +808,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         IERC20(0x404460C6A5EdE2D891e8297795264fDe62ADBB75);
 
     mapping(address => uint256) public participantTicketCount;
+    mapping(address => uint256) public wonReward;
     mapping(address => bool) public participantIsWon;
     mapping(bytes32 => bool) public isRequestIdValid;
     
@@ -1069,7 +1070,12 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         participantIsWon[participants[winner]] = true;
         rewardToken.safeTransfer(participants[winner], rewardPerWinner);
         winners.push(participants[winner]);
+        wonReward[participants[winner]] = wonReward[participants[winner]] + rewardPerWinner;
         
         
+    }
+    
+    function getWinners() public view returns(address[] memory) {
+        return winners;
     }
 }
