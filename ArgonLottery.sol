@@ -799,7 +799,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         0xc251acd21ec4fb7f31bb8868288bfdbaeb4fbfec2df3735ddbd4f7dc8d60103c;
     bytes32 public randomness;
     uint256 public rewardPerWinner;
-    uint256 public maxBuyTicket;
     uint256 burnAmount;
     uint256 verifyWithdraw = 0;
     uint256 rewardAmount;
@@ -825,7 +824,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         bool _lotteryStatus,
         uint256 _tokenPerTicket,
         uint256 _maxTicketCount,
-        uint256 _maxBuyTicket,
         uint256 _startTime,
         uint256 _endTime,
         uint256 _rewardTokenAmount,
@@ -841,7 +839,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         lotteryStatus = _lotteryStatus;
         tokenPerTicket = _tokenPerTicket;
         maxTicketCount = _maxTicketCount;
-        maxBuyTicket = _maxBuyTicket;
          require(
             startTime < endTime,
             "start block timestamp must be less than finish block timestamp"
@@ -872,7 +869,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
             participantTicketCount[msg.sender].add(_ticketAmount) <=
                 maxTicketCount
         );
-        require(_ticketAmount <= maxBuyTicket, "Max buy ticket");
         token.transferFrom(
             msg.sender,
             address(this),
@@ -898,7 +894,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
     function selectWinnerPeriodOne() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         verifyWithdraw = verifyWithdraw.add(1);
-        require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(1);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
@@ -920,7 +915,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
     function selectWinnerPeriodTwo() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         verifyWithdraw = verifyWithdraw.add(1);
-        require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(3);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
@@ -939,7 +933,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
     function selectWinnerPeriodThree() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         verifyWithdraw = verifyWithdraw.add(1);
-        require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(11);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
@@ -958,7 +951,6 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
     function selectWinnerPeriodFour() external nonReentrant onlyOwner {
         require(block.timestamp >= endTime);
         verifyWithdraw = verifyWithdraw.add(1);
-        require(rewardToken.balanceOf(address(this)) >= rewardTokenAmount);
         uint256 requiredLink = fee.mul(51);
         require(
             linkToken.balanceOf(address(this)) >= requiredLink,
