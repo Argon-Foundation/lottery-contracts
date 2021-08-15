@@ -923,7 +923,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         );
         rewardAmount = rewardTokenAmount.mul(80).div(100);
         rewardPerWinner = rewardAmount.mul(30).div(100).div(3);
-        for (uint256 i = 0; i < 4; i++) {
+        for (uint256 i = 0; i < 3; i++) {
              bytes32 _requestId = _getRandomNumber();
              isRequestIdValid[_requestId] = true;
              requestIds.push(_requestId);
@@ -941,7 +941,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         );
         rewardAmount = rewardTokenAmount.mul(80).div(100);
         rewardPerWinner = rewardAmount.mul(20).div(100).div(10);
-        for (uint256 i = 0; i < 11; i++) {
+        for (uint256 i = 0; i < 10; i++) {
             bytes32 _requestId = _getRandomNumber();
             isRequestIdValid[_requestId] = true;
             requestIds.push(_requestId);
@@ -959,7 +959,7 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         );
         rewardAmount = rewardTokenAmount.mul(80).div(100);
         rewardPerWinner = rewardAmount.mul(10).div(100).div(50);
-        for (uint256 i = 0; i < 51; i++) {
+        for (uint256 i = 0; i < 50; i++) {
             bytes32 _requestId = _getRandomNumber();
             isRequestIdValid[_requestId] = true;
             requestIds.push(_requestId);
