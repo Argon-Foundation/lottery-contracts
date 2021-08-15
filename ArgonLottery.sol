@@ -841,11 +841,11 @@ contract ArgonLottery is VRFConsumerBase, ReentrancyGuard, Ownable {
         tokenPerTicket = _tokenPerTicket;
         maxTicketCount = _maxTicketCount;
          require(
-            startTime < endTime,
+            _startTime < _endTime,
             "start block timestamp must be less than finish block timestamp"
         );
         require(
-            endTime > block.timestamp,
+            _endTime > block.timestamp,
             "finish block timestamp must be more than current block timestamp"
         );
         startTime = _startTime;
